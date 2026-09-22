@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>South Africa Live TV</title>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<style>
+body{margin:0;background:#0f0f0f;font-family:Arial,sans-serif;color:white;}
+header{background:#111;padding:15px;text-align:center;font-size:22px;}
+.live{color:red;animation:blink 1s infinite;}
+@keyframes blink{50%{opacity:0}}
+#player{width:100%;height:240px;background:black;}
+.channels{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:10px;}
+.channel{background:#1c1c1c;border-radius:10px;overflow:hidden;cursor:pointer;transition:.3s;}
+.channel:hover{background:#333;}
+.channel img{width:100%;height:90px;object-fit:contain;background:black;}
+.title{text-align:center;padding:8px;font-size:14px;}
+#adBanner{width:100%;text-align:center;margin:10px 0;}
+</style>
+  <script src="https://pl28963423.profitablecpmratenetwork.com/a6/3b/8d/a63b8dc059eb8e868640ed2409bf75d5.js"></script>
+</head>
+<body>
+
+<header>South Africa Live TV <span class="live">● LIVE</span></header>
+
+<!-- Video Player -->
+<video id="player" controls autoplay></video>
+
+<!-- Normal Ad Banner -->
+<div id="adBanner">
+  <script>
+  atOptions = {
+      'key' : '5d278d91e9bc0861f40666d968c8928f',
+      'format' : 'iframe',
+      'height' : 250,
+      'width' : 300,
+      'params' : {}
+  };
+  </script>
+  <script src="https://www.highperformanceformat.com/5d278d91e9bc0861f40666d968c8928f/invoke.js"></script>
+</div>
+
+<!-- Channels Grid -->
+<div class="channels">
+  <div class="channel" onclick="playChannel('https://sabconeta.cdn.mangomolo.com/sabc1/smil:sabc1.stream.smil/chunklist_b1600000_t64NzIwcA==.m3u8')">
+    <img src="https://raw.githubusercontent.com/iptv-org/logos/master/sabc1.png" onerror="this.src='https://dummyimage.com/300x150/000/fff&text=SABC+1'">
+    <div class="title">SABC 1</div>
+  </div>
+
+  <div class="channel" onclick="playChannel('https://sabctwota.cdn.mangomolo.com/sabc2/smil:sabc2.stream.smil/chunklist_b1600000_t64NzIwcA==.m3u8')">
+    <img src="https://raw.githubusercontent.com/iptv-org/logos/master/sabc2.png" onerror="this.src='https://dummyimage.com/300x150/000/fff&text=SABC+2'">
+    <div class="title">SABC 2</div>
+  </div>
+
+  <div class="channel" onclick="playChannel('https://sabctreta.cdn.mangomolo.com/sabc3/smil:sabc3.stream.smil/chunklist_b1600000_t64NzIwcA==.m3u8')">
+    <img src="https://raw.githubusercontent.com/iptv-org/logos/master/sabc3.png" onerror="this.src='https://dummyimage.com/300x150/000/fff&text=SABC+3'">
+    <div class="title">SABC 3</div>
+  </div>
+
+  <div class="channel" onclick="playChannel('https://sabconetanw.cdn.mangomolo.com/news/smil:news.stream.smil/master.m3u8')">
+    <img src="https://raw.githubusercontent.com/iptv-org/logos/master/sabcnews.png" onerror="this.src='https://dummyimage.com/300x150/000/fff&text=SABC+News'">
+    <div class="title">SABC News</div>
+  </div>
+
+  <div class="channel" onclick="playChannel('https://sabctwotasp.cdn.mangomolo.com/sport/smil:sport.stream.smil/chunklist_b1600000_t64NzIwcA==.m3u8')">
+    <img src="https://raw.githubusercontent.com/iptv-org/logos/master/sabcsport.png" onerror="this.src='https://dummyimage.com/300x150/000/fff&text=SABC+Sport'">
+    <div class="title">SABC Sport</div>
+  </div>
+
+  <div class="channel" onclick="playChannel('https://sabctretaed.cdn.mangomolo.com/edu/smil:edu.stream.smil/chunklist_b2000000_t64NzIwcA==.m3u8')">
+    <img src="https://raw.githubusercontent.com/iptv-org/logos/master/sabceducation.png" onerror="this.src='https://dummyimage.com/300x150/000/fff&text=SABC+Education'">
+    <div class="title">SABC Education</div>
+  </div>
+</div>
+
+<script>
+var video = document.getElementById('player');
+var hls;
+
+function playChannel(url){
+  if(Hls.isSupported()){
+      if(hls) hls.destroy();
+      hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED,function(){video.play();});
+  } else if(video.canPlayType('application/vnd.apple.mpegurl')){
+      video.src = url;
+      video.play();
+  }
+}
+
+// Start default channel
+playChannel("https://sabconetanw.cdn.mangomolo.com/news/smil:news.stream.smil/master.m3u8");
+</script>
+
+</body>
+</html>
