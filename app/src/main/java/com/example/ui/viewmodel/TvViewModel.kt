@@ -1,6 +1,7 @@
 package com.example.ui.viewmodel
 
 import android.app.Application
+import android.os.Build
 import androidx.annotation.OptIn
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.HttpDataSource
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import com.example.data.local.AppDatabase
 import com.example.data.model.Channel
@@ -70,9 +72,32 @@ class TvViewModel(application: Application) : AndroidViewModel(application) {
 
     // Single shared ExoPlayer instance with decoder fallback enabled
     val player: ExoPlayer = run {
+        val isEmulator = Build.FINGERPRINT.startsWith("generic") ||
+            Build.FINGERPRINT.startsWith("unknown") ||
+            Build.MODEL.contains("google_sdk") ||
+            Build.MODEL.contains("Emulator") ||
+            Build.MODEL.contains("Android SDK built for x86") ||
+            Build.HARDWARE.contains("goldfish") ||
+            Build.HARDWARE.contains("ranchu") ||
+            Build.PRODUCT.contains("sdk") ||
+            Build.PRODUCT.contains("vbox") ||
+            Build.PRODUCT.contains("emulator")
+
+        val mediaCodecSelector = if (isEmulator) {
+            MediaCodecSelector { mimeType, requiresSecureDecoder, requiresTunnelingDecoder ->
+                val decoders = MediaCodecSelector.DEFAULT.getDecoderInfos(mimeType, requiresSecureDecoder, requiresTunnelingDecoder)
+                // Prioritize software decoders on emulators (e.g., c2.android.avc.decoder)
+                // to completely bypass hardware C2 component resource allocation queries
+                decoders.sortedByDescending { it.softwareOnly }
+            }
+        } else {
+            MediaCodecSelector.DEFAULT
+        }
+
         val renderersFactory = DefaultRenderersFactory(application)
             .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
             .setEnableDecoderFallback(true)
+            .setMediaCodecSelector(mediaCodecSelector)
 
         ExoPlayer.Builder(application, renderersFactory)
             .setMediaSourceFactory(mediaSourceFactory)
