@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Mzansi TV</string>
+    <string name="header_title">South Africa Live TV</string>
+    <string name="status_live">LIVE</string>
+    <string name="category_all">All Channels</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="fullscreen">Full Screen</string>
+    <string name="retry">Retry</string>
+    <string name="now_playing">Now Playing</string>
+</resources>

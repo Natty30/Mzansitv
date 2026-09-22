@@ -1,0 +1,6 @@
+{
+  "name": "Mzansi TV",
+  "description": "South Africa Live TV streaming app featuring SABC 1, SABC 2, SABC 3, SABC News, SABC Sport, and SABC Education.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
