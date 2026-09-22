@@ -31,35 +31,43 @@ object AdMobManager {
         get() = BuildConfig.ADMOB_INTERSTITIAL_ID
 
     fun initializeWithConsent(activity: Activity, onReady: () -> Unit = {}) {
-        val params = ConsentRequestParameters.Builder().build()
-        val consentInformation = UserMessagingPlatform.getConsentInformation(activity)
+        try {
+            val params = ConsentRequestParameters.Builder().build()
+            val consentInformation = UserMessagingPlatform.getConsentInformation(activity)
 
-        consentInformation.requestConsentInfoUpdate(
-            activity,
-            params,
-            {
-                UserMessagingPlatform.loadAndShowConsentFormIfRequired(activity) { formError ->
-                    if (formError != null) {
-                        Log.w(TAG, "Consent form error: ${formError.errorCode} - ${formError.message}")
+            consentInformation.requestConsentInfoUpdate(
+                activity,
+                params,
+                {
+                    UserMessagingPlatform.loadAndShowConsentFormIfRequired(activity) { formError ->
+                        if (formError != null) {
+                            Log.w(TAG, "Consent form error: ${formError.errorCode} - ${formError.message}")
+                        }
+                        if (consentInformation.canRequestAds()) {
+                            initializeMobileAds(activity)
+                        }
+                        onReady()
                     }
+                },
+                { requestConsentError ->
+                    Log.w(TAG, "Consent info update error: ${requestConsentError.errorCode} - ${requestConsentError.message}")
                     if (consentInformation.canRequestAds()) {
                         initializeMobileAds(activity)
                     }
                     onReady()
                 }
-            },
-            { requestConsentError ->
-                Log.w(TAG, "Consent info update error: ${requestConsentError.errorCode} - ${requestConsentError.message}")
-                if (consentInformation.canRequestAds()) {
-                    initializeMobileAds(activity)
-                }
-                onReady()
-            }
-        )
+            )
 
-        // If consent was previously gathered or available, initialize MobileAds
-        if (consentInformation.canRequestAds()) {
-            initializeMobileAds(activity)
+            // If consent was previously gathered or available, initialize MobileAds
+            if (consentInformation.canRequestAds()) {
+                initializeMobileAds(activity)
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Consent flow initialization error: ${e.message}")
+            try {
+                initializeMobileAds(activity)
+            } catch (ignored: Exception) {}
+            onReady()
         }
     }
 
@@ -67,9 +75,13 @@ object AdMobManager {
         if (isMobileAdsInitializeCalled.getAndSet(true)) {
             return
         }
-        MobileAds.initialize(context) { status ->
-            Log.d(TAG, "MobileAds initialized: $status")
-            preloadInterstitial(context)
+        try {
+            MobileAds.initialize(context) { status ->
+                Log.d(TAG, "MobileAds initialized: $status")
+                preloadInterstitial(context)
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "MobileAds initialize exception: ${e.message}")
         }
     }
 

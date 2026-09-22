@@ -71,7 +71,7 @@ class TvViewModel(application: Application) : AndroidViewModel(application) {
     // Single shared ExoPlayer instance with decoder fallback enabled
     val player: ExoPlayer = run {
         val renderersFactory = DefaultRenderersFactory(application)
-            .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+            .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
             .setEnableDecoderFallback(true)
 
         ExoPlayer.Builder(application, renderersFactory)
