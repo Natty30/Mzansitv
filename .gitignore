@@ -21,4 +21,3 @@ debug.keystore.base64
 .build-outputs/
 app/build/
 build/
-release_artifacts/
