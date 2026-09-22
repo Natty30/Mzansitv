@@ -127,11 +127,32 @@ class TvViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         override fun onPlayerError(error: PlaybackException) {
-            val cause = error.cause
             val channel = _uiState.value.selectedChannel
 
-            val isHttp403 = cause is HttpDataSource.InvalidResponseCodeException && cause.responseCode == 403
-            val isHttp404 = cause is HttpDataSource.InvalidResponseCodeException && cause.responseCode == 404
+            // Recursively inspect cause chain for HTTP status codes and live window exceptions
+            var currentCause: Throwable? = error
+            var httpStatusCode: Int? = null
+            var isBehindLiveWindow = false
+            while (currentCause != null) {
+                if (currentCause is HttpDataSource.InvalidResponseCodeException) {
+                    httpStatusCode = currentCause.responseCode
+                    break
+                }
+                if (currentCause is androidx.media3.exoplayer.source.BehindLiveWindowException) {
+                    isBehindLiveWindow = true
+                    break
+                }
+                currentCause = currentCause.cause
+            }
+
+            if (isBehindLiveWindow) {
+                player.seekToDefaultPosition()
+                player.prepare()
+                return
+            }
+
+            val isHttp403 = httpStatusCode == 403
+            val isHttp404 = httpStatusCode == 404
 
             val errorMessage = when {
                 isHttp403 -> {
@@ -140,20 +161,20 @@ class TvViewModel(application: Application) : AndroidViewModel(application) {
                 isHttp404 -> {
                     "Stream feed currently offline (HTTP 404). Broadcast is temporarily not transmitting."
                 }
-                cause is HttpDataSource.HttpDataSourceException -> {
-                    "Connection failed while streaming ${channel.name}. Please verify network connectivity."
-                }
                 error.errorCode == PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED ||
                 error.errorCode == PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_TIMEOUT -> {
-                    "Connection timed out while loading ${channel.name} live stream."
+                    "Connection timed out while loading ${channel.name} live stream. Please verify network connectivity."
+                }
+                error.errorCode == PlaybackException.ERROR_CODE_DECODER_INIT_FAILED -> {
+                    "Video decoder initialization error for ${channel.name}."
                 }
                 else -> {
                     "Stream unavailable. ${error.localizedMessage ?: "Unable to connect to live broadcast."}"
                 }
             }
 
-            // Automatic retry up to 2 times for transient connection drops (skip if geofence 403)
-            if (!isHttp403 && autoRetryAttempts < maxAutoRetries) {
+            // Automatic retry up to 2 times for transient connection drops (skip if geofence 403 or 404)
+            if (!isHttp403 && !isHttp404 && autoRetryAttempts < maxAutoRetries) {
                 autoRetryAttempts++
                 viewModelScope.launch {
                     delay(1500L * autoRetryAttempts)

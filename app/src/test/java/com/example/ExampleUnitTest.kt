@@ -16,7 +16,7 @@ class ExampleUnitTest {
     @Test
     fun channelCatalog_hasAllCoreMzansiChannels() {
         val channels = ChannelCatalog.channels
-        assertEquals(10, channels.size)
+        assertEquals(13, channels.size)
 
         val channelIds = channels.map { it.id }
         assertTrue(channelIds.contains("sabc_news"))
@@ -29,6 +29,9 @@ class ExampleUnitTest {
         assertTrue(channelIds.contains("sportscast_africa"))
         assertTrue(channelIds.contains("brics_africa"))
         assertTrue(channelIds.contains("wildearth_sa"))
+        assertTrue(channelIds.contains("cape_town_tv"))
+        assertTrue(channelIds.contains("tshwane_tv"))
+        assertTrue(channelIds.contains("one_kzn_tv"))
     }
 
     @Test
