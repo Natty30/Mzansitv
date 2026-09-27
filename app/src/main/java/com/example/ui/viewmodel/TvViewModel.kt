@@ -79,9 +79,13 @@ class TvViewModel(application: Application) : AndroidViewModel(application) {
             Build.MODEL.contains("Android SDK built for x86") ||
             Build.HARDWARE.contains("goldfish") ||
             Build.HARDWARE.contains("ranchu") ||
+            Build.HARDWARE.contains("cutf") ||
             Build.PRODUCT.contains("sdk") ||
+            Build.PRODUCT.contains("gphone") ||
             Build.PRODUCT.contains("vbox") ||
-            Build.PRODUCT.contains("emulator")
+            Build.PRODUCT.contains("emulator") ||
+            Build.BRAND.startsWith("generic") ||
+            Build.DEVICE.startsWith("generic")
 
         val mediaCodecSelector = if (isEmulator) {
             MediaCodecSelector { mimeType, requiresSecureDecoder, requiresTunnelingDecoder ->
