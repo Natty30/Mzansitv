@@ -68,7 +68,7 @@ Developed by **[Natty30](https://github.com/Natty30)**.
 ## 🚀 Production & Release Configuration
 
 ### 💰 Google AdMob Integration
-The app integrates the official Google Mobile Ads SDK (`play-services-ads:23.6.0`) with automated development test ad isolation and production ad routing:
+The app integrates the official Google Mobile Ads SDK (`play-services-ads:25.5.0`) with automated development test ad isolation and production ad routing:
 
 - **Debug Builds**: Automatically use official Google AdMob sample test IDs (`ca-app-pub-3940256099942544...`) to prevent test click policy violations.
 - **Release Builds**: Automatically inject production AdMob units:
