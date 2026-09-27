@@ -27,11 +27,12 @@ android {
     create("release") {
       val keystorePath = System.getenv("KEYSTORE_PATH") ?: "${rootDir}/my-upload-key.jks"
       val keystoreFile = file(keystorePath)
-      if (keystoreFile.exists() && !System.getenv("STORE_PASSWORD").isNullOrEmpty()) {
+      val uploadPassword = System.getenv("STORE_PASSWORD") ?: "mzansitv2026"
+      if (keystoreFile.exists()) {
         storeFile = keystoreFile
-        storePassword = System.getenv("STORE_PASSWORD")
+        storePassword = uploadPassword
         keyAlias = System.getenv("KEY_ALIAS") ?: "upload"
-        keyPassword = System.getenv("KEY_PASSWORD") ?: System.getenv("STORE_PASSWORD")
+        keyPassword = System.getenv("KEY_PASSWORD") ?: uploadPassword
       } else {
         // Fallback to debug.keystore when custom upload keystore is not provided in environment
         storeFile = file("${rootDir}/debug.keystore")
